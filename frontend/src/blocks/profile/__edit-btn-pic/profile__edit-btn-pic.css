@@ -1,0 +1,13 @@
+.profile__edit-btn-pic {
+  margin: 0;
+  border: 1px solid #fff;
+  padding: 5.25px;
+  width: 7.5px;
+}
+
+@media screen and (min-width: 1024px) {
+  .profile__edit-btn-pic {
+    width: 9px;
+    padding: 7px;
+  }
+}

@@ -1,0 +1,16 @@
+.card__dlt-btn {
+  all: unset;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-image: url(../../../images/button__delete.svg);
+  background-size: 100% 100%;
+  width: 18px;
+  height: 19px;
+}
+
+.card__dlt-btn:hover {
+  opacity: 0.6;
+  transition: opacity 0.4s linear;
+  cursor: pointer;
+}

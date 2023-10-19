@@ -1,0 +1,8 @@
+.popup__big-photo {
+    max-width: 75vw;
+    max-height: 75vh;
+}
+
+.popup__big-photo:hover {
+    cursor: auto;
+}

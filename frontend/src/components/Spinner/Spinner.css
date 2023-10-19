@@ -1,0 +1,12 @@
+.spinner {
+    width: 150px;
+    height: 150px;
+    background-image: url(../../images/Spinner.gif);
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: grid;
+    justify-content: center;
+    margin: 0 auto;
+    grid-column: 1/6;
+    grid-row: 1/2;
+}

@@ -1,0 +1,14 @@
+.profile__add-btn-pic {
+  margin: 0;
+  width: 16px;
+  border: 2px solid white;
+  border-radius: 2px;
+  padding: 15px 130px;
+}
+
+@media screen and (min-width: 1024px) {
+  .profile__add-btn-pic {
+    width: 22px;
+    padding: 12px 62px;
+  }
+}
