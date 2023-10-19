@@ -1,7 +1,6 @@
 # Logs
 logs
 *.log
-.env
 npm-debug.log*
 
 # Dependency directory
@@ -9,6 +8,7 @@ node_modules
 
 # Optional npm cache directory
 .npm
+.env
 
 # Optional REPL history
 .DS_Store
