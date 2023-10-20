@@ -11,6 +11,6 @@
 
 IP-адрес 51.250.103.200
 
-Frontend https://...
+Frontend https://mesto.lazutin.nomoredomainsrocks.ru
 
-Backend https://...
+Backend https://api.mesto.lazutin.nomoredomainsrocks.ru
