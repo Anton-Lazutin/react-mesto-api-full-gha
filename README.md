@@ -9,8 +9,8 @@
 
 ## Ссылки на проект
 
-IP-адрес 51.250.103.200
+IP-адрес 158.160.21.33
 
-Frontend https://mesto.lazutin.nomoredomainsrocks.ru
+Frontend https://mesto.lazutin.anton.nomoredomainsrocks.ru
 
-Backend https://api.mesto.lazutin.nomoredomainsrocks.ru
+Backend https://api.mesto.lazutin.anton.nomoredomainsrocks.ru
