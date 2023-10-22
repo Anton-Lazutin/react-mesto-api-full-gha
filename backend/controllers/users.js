@@ -39,7 +39,11 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        throw new NotFoundError('Пользователь с указанным id не найден');
+      } else {
+        res.status(200).send(user);
+      }
     })
     .catch((err) => {
       if (err.message === 'NotFound') {

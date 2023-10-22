@@ -39,7 +39,7 @@ module.exports.deleteCards = (req, res, next) => {
   Card.findOne({ _id: req.params.cardId })
     .then((card) => {
       if (!card) {
-        throw next(new NotFoundError('Карточка с указанным id не найдена'));
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
       if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Карточка другого пользователя');
@@ -71,7 +71,11 @@ module.exports.likeCards = (req, res, next) => {
     .populate(['owner', 'likes'])
     .orFail()
     .then((card) => {
-      res.status(200).send(card);
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным id не найдена');
+      } else {
+        res.status(200).send(card);
+      }
     })
     .catch((err) => {
       if (err.message === 'NotFound') {
@@ -89,7 +93,11 @@ module.exports.dislikeCards = (req, res, next) => {
     .populate(['owner', 'likes'])
     .orFail()
     .then((card) => {
-      res.status(200).send(card);
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным id не найдена');
+      } else {
+        res.status(200).send(card);
+      }
     })
     .catch((err) => {
       if (err.message === 'NotFound') {
