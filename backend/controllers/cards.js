@@ -35,6 +35,31 @@ module.exports.getCards = (req, res, next) => {
     .catch((err) => next(err));
 };
 
+module.exports.likeCards = (req, res, next) => {
+  Card.findOne({ _id: req.params.cardId })
+    .then((card) => {
+      if (!card) {
+        next(new NotFoundError('Карточка с указанным id не найдена'));
+      }
+
+      card.likes.addToSet(req.user._id);
+      card.save()
+        .then((updatedCard) => {
+          res.status(200).send(updatedCard);
+        })
+        .catch((err) => {
+          next(err);
+        });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректный Id'));
+      } else {
+        next(err);
+      }
+    });
+};
+
 module.exports.deleteCards = (req, res, next) => {
   Card.findOne({ _id: req.params.cardId })
     .then((card) => {
@@ -66,35 +91,24 @@ module.exports.deleteCards = (req, res, next) => {
     });
 };
 
-module.exports.likeCards = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .populate(['owner', 'likes'])
-    .orFail()
-    .then((card) => {
-      res.status(200).send(card);
-    })
-    .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
-      } else if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный Id'));
-      } else {
-        next(err);
-      }
-    });
-};
-
 module.exports.dislikeCards = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .populate(['owner', 'likes'])
-    .orFail()
+  Card.findOne({ _id: req.params.cardId })
     .then((card) => {
-      res.status(200).send(card);
+      if (!card) {
+        next(new NotFoundError('Карточка с указанным id не найдена'));
+      }
+
+      card.likes.pull(req.user._id);
+      card.save()
+        .then((updatedCard) => {
+          res.status(200).send(updatedCard);
+        })
+        .catch((err) => {
+          next(err);
+        });
     })
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new BadRequestError('Некорректный Id'));
       } else {
         next(err);
