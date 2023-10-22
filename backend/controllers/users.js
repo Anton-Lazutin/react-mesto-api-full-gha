@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
+const { SECRET_KEY = 'mesto' } = process.env;
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
@@ -36,7 +38,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
-  User.findOne({ _id: req.params.userId })
+  User.findById(req.params.userId)
     .orFail()
     .then((user) => {
       if (!user) {
@@ -45,7 +47,7 @@ module.exports.getUserById = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.message === 'NotFound') {
+      if (NotFoundError()) {
         next(new NotFoundError('Пользователь с указанным id не найден'));
       } else if (err.name === 'CastError') {
         next(new BadRequestError('Некорректный Id'));
@@ -84,7 +86,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'mesto', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '7d' });
       res.status(200).send({ token });
     })
     .catch((err) => {
