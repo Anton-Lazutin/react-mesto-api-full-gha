@@ -67,15 +67,14 @@ module.exports.deleteCards = (req, res, next) => {
 };
 
 module.exports.likeCards = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  Card.findOne({ _id: req.params.cardId }, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
     .orFail()
-    .then((card, err) => {
-      if (card) {
-        res.status(200).send(card);
-      } else {
-        next(err);
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.message === 'NotFound') {
@@ -89,15 +88,14 @@ module.exports.likeCards = (req, res, next) => {
 };
 
 module.exports.dislikeCards = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+  Card.findOne({ _id: req.params.cardId }, { $pull: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
     .orFail()
-    .then((card, err) => {
-      if (card) {
-        res.status(200).send(card);
-      } else {
-        next(err);
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка с указанным id не найдена');
       }
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.message === 'NotFound') {
