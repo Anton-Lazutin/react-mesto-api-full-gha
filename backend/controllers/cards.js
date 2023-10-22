@@ -70,11 +70,11 @@ module.exports.likeCards = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
     .orFail()
-    .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
-      } else {
+    .then((card, err) => {
+      if (card) {
         res.status(200).send(card);
+      } else {
+        next(err);
       }
     })
     .catch((err) => {
@@ -92,11 +92,11 @@ module.exports.dislikeCards = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
     .orFail()
-    .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
-      } else {
+    .then((card, err) => {
+      if (card) {
         res.status(200).send(card);
+      } else {
+        next(err);
       }
     })
     .catch((err) => {
