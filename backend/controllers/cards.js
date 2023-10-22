@@ -47,16 +47,16 @@ module.exports.deleteCards = (req, res, next) => {
           res.status(200).send({ message: 'Карточка удалена' });
         })
         .catch((err) => {
-          if (err.message === 'NotFound') {
-            next(new NotFoundError('Карточка с указанным id не найдена'));
+          if (err instanceof NotFoundError) {
+            next(new NotFoundError('Карточка не найдена.'));
           } else {
             next(err);
           }
         });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный Id'));
+      if (err instanceof 'CastError') {
+        next(new BadRequestError('Некорректный _id карточки'));
       } else {
         next(err);
       }
