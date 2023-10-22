@@ -72,7 +72,7 @@ module.exports.likeCards = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным id не найдена');
+        next(new NotFoundError('Карточка с указанным id не найдена'));
       } else {
         res.status(200).send(card);
       }
@@ -94,7 +94,7 @@ module.exports.dislikeCards = (req, res, next) => {
     .orFail()
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным id не найдена');
+        next(new NotFoundError('Карточка с указанным id не найдена'));
       } else {
         res.status(200).send(card);
       }

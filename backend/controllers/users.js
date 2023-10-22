@@ -40,7 +40,7 @@ module.exports.getUserById = (req, res, next) => {
     .orFail()
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь с указанным id не найден');
+        next(new NotFoundError('Пользователь с указанным id не найден'));
       } else {
         res.status(200).send(user);
       }
