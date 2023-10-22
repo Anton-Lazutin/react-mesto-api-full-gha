@@ -35,31 +35,6 @@ module.exports.getCards = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-module.exports.likeCards = (req, res, next) => {
-  Card.findOne({ _id: req.params.cardId })
-    .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
-      }
-
-      card.likes.addToSet(req.user._id);
-      card.save()
-        .then((updatedCard) => {
-          res.status(200).send(updatedCard);
-        })
-        .catch((err) => {
-          next(err);
-        });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный Id'));
-      } else {
-        next(err);
-      }
-    });
-};
-
 module.exports.deleteCards = (req, res, next) => {
   Card.findOne({ _id: req.params.cardId })
     .then((card) => {
@@ -91,21 +66,32 @@ module.exports.deleteCards = (req, res, next) => {
     });
 };
 
-module.exports.dislikeCards = (req, res, next) => {
-  Card.findOne({ _id: req.params.cardId })
+module.exports.likeCards = (req, res, next) => {
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка с указанным id не найдена'));
+        throw new NotFoundError('Карточка не найдена');
       }
+      return res.send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректный Id'));
+      } else {
+        next(err);
+      }
+    });
+};
 
-      card.likes.pull(req.user._id);
-      card.save()
-        .then((updatedCard) => {
-          res.status(200).send(updatedCard);
-        })
-        .catch((err) => {
-          next(err);
-        });
+module.exports.dislikeCards = (req, res, next) => {
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+    .populate(['owner', 'likes'])
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена');
+      }
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
