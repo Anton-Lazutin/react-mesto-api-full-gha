@@ -12,7 +12,7 @@ module.exports.addCard = (req, res, next) => {
         .populate('owner')
         .then((data) => res.status(201).send(data))
         .catch((err) => {
-          if (NotFoundError()) {
+          if (err.message === 'NotFound') {
             next(new NotFoundError('Карточка с указанным id не найдена'));
           } else {
             next(err);
@@ -50,7 +50,7 @@ module.exports.deleteCards = (req, res, next) => {
           res.status(200).send({ message: 'Карточка удалена' });
         })
         .catch((err) => {
-          if (NotFoundError()) {
+          if (err.message === 'NotFound') {
             next(new NotFoundError('Карточка с указанным id не найдена'));
           } else {
             next(err);
@@ -74,7 +74,7 @@ module.exports.likeCards = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (NotFoundError()) {
+      if (err.message === 'NotFound') {
         next(new NotFoundError('Карточка с указанным id не найдена'));
       } else if (err.name === 'CastError') {
         next(new BadRequestError('Некорректный Id'));
@@ -92,7 +92,7 @@ module.exports.dislikeCards = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (NotFoundError()) {
+      if (err.message === 'NotFound') {
         next(new NotFoundError('Карточка с указанным id не найдена'));
       } else if (err.name === 'CastError') {
         next(new BadRequestError('Некорректный Id'));
