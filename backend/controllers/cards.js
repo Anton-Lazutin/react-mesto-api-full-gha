@@ -8,11 +8,11 @@ module.exports.addCard = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
       Card.findById(card._id)
-        .orFail(new NotFoundError())
+        .orFail()
         .populate('owner')
         .then((data) => res.status(201).send(data))
         .catch((err) => {
-          if (err instanceof NotFoundError) {
+          if (err.message === 'NotFound') {
             next(new NotFoundError('Карточка с указанным id не найдена'));
           } else {
             next(err);
@@ -20,7 +20,7 @@ module.exports.addCard = (req, res, next) => {
         });
     })
     .catch((err) => {
-      if (err instanceof 'ValidationError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
       } else {
         next(err);
@@ -36,8 +36,7 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCards = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    .orFail()
+  Card.findOne({ _id: req.params.cardId })
     .then((card) => {
       if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Карточка другого пользователя');
@@ -48,18 +47,16 @@ module.exports.deleteCards = (req, res, next) => {
           res.status(200).send({ message: 'Карточка удалена' });
         })
         .catch((err) => {
-          if (err instanceof NotFoundError) {
+          if (err.message === 'NotFound') {
             next(new NotFoundError('Карточка с указанным id не найдена'));
-          } else if (err instanceof 'CastError') {
-            next(new BadRequestError('Некорректный Id'));
           } else {
             next(err);
           }
         });
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError('Карточка с _id не найдена.'));
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректный Id'));
       } else {
         next(err);
       }
@@ -74,10 +71,10 @@ module.exports.likeCards = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`));
-      } else if (err instanceof 'CastError') {
-        next(new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`));
+      if (err.message === 'NotFound') {
+        next(new NotFoundError('Карточка с указанным id не найдена'));
+      } else if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректный Id'));
       } else {
         next(err);
       }
@@ -92,10 +89,10 @@ module.exports.dislikeCards = (req, res, next) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err instanceof NotFoundError) {
-        next(new NotFoundError('Карточка с _id не найдена.'));
-      } else if (err instanceof 'CastError') {
-        next(new BadRequestError('Некорректный _id карточки'));
+      if (err.message === 'NotFound') {
+        next(new NotFoundError('Карточка с указанным id не найдена'));
+      } else if (err.name === 'CastError') {
+        next(new BadRequestError('Некорректный Id'));
       } else {
         next(err);
       }
