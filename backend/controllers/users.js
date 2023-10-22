@@ -19,7 +19,7 @@ module.exports.addUser = (req, res, next) => {
       .catch((err) => {
         if (err.code === 11000) {
           next(new ConflictError(`Пользователь с email: ${email} уже зарегистрирован`));
-        } else if (err.name === 'ValidationError') {
+        } else if (err instanceof 'ValidationError') {
           next(new BadRequestError(err.message));
         } else {
           next(err);
@@ -37,15 +37,15 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail(new Error('NotFound'))
+    .orFail()
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        next(new NotFoundError('Пользователь с указанным id не найден'));
-      } else if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректный Id'));
+      if (err instanceof 'CastError') {
+        next(new BadRequestError('Некорректный _id'));
+      } else if (err instanceof NotFoundError) {
+        next(new NotFoundError('Пользователь по указанному _id не найден.'));
       } else {
         next(err);
       }
@@ -54,42 +54,40 @@ module.exports.getUserById = (req, res, next) => {
 
 module.exports.editUserData = (req, res, next) => {
   const { name, about } = req.body;
-  if (req.user._id) {
-    User.findByIdAndUpdate(req.user._id, { name, about }, { new: 'true', runValidators: true })
-      .then((user) => res.send(user))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new BadRequestError(err.message));
-        } else {
-          next(err);
-        }
-      });
-  } else {
-    next(new NotFoundError('Пользователь с указанным id не найден'));
-  }
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: 'true', runValidators: true })
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err instanceof 'ValidationError') {
+        next(new BadRequestError(err.message));
+      } else if (err instanceof NotFoundError) {
+        next(new NotFoundError('Пользователь по указанному _id не найден.'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.editUserAvatar = (req, res, next) => {
-  if (req.user._id) {
-    User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
-      .then((user) => res.send(user))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new BadRequestError(err.message));
-        } else {
-          next(err);
-        }
-      });
-  } else {
-    next(new NotFoundError('Пользователь с указанным id не найден'));
-  }
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err instanceof 'ValidationError') {
+        next(new BadRequestError(err.message));
+      } else if (err instanceof NotFoundError) {
+        next(new NotFoundError('Пользователь по указанному _id не найден.'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, 'mesto', { expiresIn: '7d' });
       res.status(200).send({ token });
     })
     .catch((err) => {
