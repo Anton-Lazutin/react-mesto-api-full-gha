@@ -38,6 +38,9 @@ module.exports.getCards = (req, res, next) => {
 module.exports.deleteCards = (req, res, next) => {
   Card.findOne({ _id: req.params.cardId })
     .then((card) => {
+      if (!card) {
+        throw next(new NotFoundError('Карточка с указанным id не найдена'));
+      }
       if (!card.owner.equals(req.user._id)) {
         throw new ForbiddenError('Карточка другого пользователя');
       }
