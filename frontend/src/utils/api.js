@@ -93,7 +93,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "http://localhost:3000",
+  baseUrl: "api.mesto.lazutin.anton.nomoredomainsrocks.ru",
 });
 
 export default api;
