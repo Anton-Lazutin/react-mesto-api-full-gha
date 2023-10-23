@@ -8,16 +8,8 @@ module.exports.addCard = (req, res, next) => {
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
       Card.findById(card._id)
-        .orFail()
         .populate('owner')
         .then((data) => res.status(201).send(data))
-        .catch((err) => {
-          if (err.message === 'NotFound') {
-            next(new NotFoundError('Карточка с указанным id не найдена'));
-          } else {
-            next(err);
-          }
-        });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
