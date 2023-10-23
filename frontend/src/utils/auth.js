@@ -1,4 +1,4 @@
-const baseUrl = "https://api.mesto.lazutin.anton.nomoredomainsrocks.ru";
+const baseUrl = "api.mesto.lazutin.anton.nomoredomainsrocks.ru";
 
 function getResponseData(res) {
   return res.ok

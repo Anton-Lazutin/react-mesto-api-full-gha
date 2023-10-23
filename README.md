@@ -7,7 +7,7 @@
 
 ## Ссылки на проект
 
-IP 51.250.28.79
+IP 158.160.0.250
 
 Frontend https://mesto.lazutin.anton.nomoredomainsrocks.ru
 
