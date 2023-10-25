@@ -15,8 +15,9 @@ module.exports.addCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(err.message));
       } else {
-        next(err);
+        return next(err);
       }
+      return true;
     });
 };
 
@@ -37,7 +38,7 @@ module.exports.deleteCards = (req, res, next) => {
         throw new ForbiddenError('Карточка другого пользователя');
       }
       Card.deleteOne(card)
-        .orFail()
+        .orFail(() => new Error('NotFound'))
         .then(() => {
           res.status(200).send({ message: 'Карточка удалена' });
         })
