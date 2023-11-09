@@ -37,13 +37,7 @@ module.exports.deleteCards = (req, res, next) => {
         .then(() => {
           res.status(200).send({ message: 'Карточка удалена' });
         })
-        .catch((err) => {
-          if (err.message === 'NotFound') {
-            next(new NotFoundError('Карточка с указанным id не найдена'));
-          } else {
-            next(err);
-          }
-        });
+        .catch((err) => next(err));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
